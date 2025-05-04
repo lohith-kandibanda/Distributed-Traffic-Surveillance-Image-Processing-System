@@ -1,3 +1,2 @@
-Contains 
-Yolo11m
-Yolov9n
+Download models from this link -
+https://huggingface.co/lohi-hugging/Helemet_detection/tree/main
