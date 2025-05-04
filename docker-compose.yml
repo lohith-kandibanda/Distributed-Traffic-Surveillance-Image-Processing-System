@@ -1,0 +1,90 @@
+version: "3.8"
+
+services:
+  api_server:
+    build:
+      context: ./api_server
+      dockerfile: Dockerfile
+    container_name: api_server
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rabbitmq
+      - redis
+      - master_worker
+
+  master_worker:
+    build:
+      context: ./master_worker
+      dockerfile: Dockerfile
+    container_name: master_worker
+    depends_on:
+      - rabbitmq
+      - redis
+
+  vehicle_worker:
+    build:
+      context: ./vehicle_worker
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+      - redis
+    deploy:
+      mode: replicated
+      replicas: 2
+    restart: always
+
+  plate_worker:
+    build:
+      context: ./plate_worker
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+      - redis
+    deploy:
+      mode: replicated
+      replicas: 2
+    restart: always
+
+  helmet_worker:
+    build:
+      context: ./helmet_worker
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+      - redis
+    deploy:
+      mode: replicated
+      replicas: 2
+    restart: always
+
+  streamlit_ui:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: streamlit_ui
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api_server
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+networks:
+  default:
+    name: distributed_traffic_network
