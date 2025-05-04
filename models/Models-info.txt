@@ -1,2 +1,4 @@
 Download models from this link -
 https://huggingface.co/lohi-hugging/Helemet_detection/tree/main
+You need Yolo11m.pt
+and helmet_detection.pt to run this project
